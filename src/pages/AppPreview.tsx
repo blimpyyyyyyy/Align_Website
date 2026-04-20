@@ -136,7 +136,7 @@ const AppPreview = () => {
           </div>
 
           {/* Bottom nav */}
-          <div className="sticky bottom-0 grid grid-cols-5 border-t border-border bg-card/95 backdrop-blur">
+          <div className="grid grid-cols-5 border-t border-border bg-card/95 backdrop-blur">
             {tabs.map(({ key, label, Icon }) => {
               const active = key === activeTab;
               return (
