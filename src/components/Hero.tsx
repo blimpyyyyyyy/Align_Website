@@ -37,9 +37,6 @@ export const Hero = () => (
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button variant="outline" size="xl">
-              <Play className="h-4 w-4" /> See How It Works
-            </Button>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground lg:justify-start">
