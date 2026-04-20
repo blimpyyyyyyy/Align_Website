@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { CalendarMock } from "./CalendarMock";
 import { Link } from "react-router-dom";
 
