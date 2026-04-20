@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Logo } from "./CalendarMock";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const links = [
   { href: "#how", label: "How it works" },
@@ -47,7 +48,9 @@ export const Nav = () => {
 
         <div className="hidden items-center gap-3 md:flex">
           <Button variant="ghost" size="sm">Sign in</Button>
-          <Button variant="hero" size="sm">Get Started</Button>
+          <Button variant="hero" size="sm" asChild>
+            <Link to="/app">Get Started</Link>
+          </Button>
         </div>
 
         <button
@@ -72,7 +75,9 @@ export const Nav = () => {
                 {l.label}
               </a>
             ))}
-            <Button variant="hero" className="mt-2 w-full">Get Started</Button>
+            <Button variant="hero" className="mt-2 w-full" asChild>
+              <Link to="/app" onClick={() => setOpen(false)}>Get Started</Link>
+            </Button>
           </div>
         </div>
       )}

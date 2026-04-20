@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { CalendarMock } from "./CalendarMock";
+import { Link } from "react-router-dom";
 
 export const Hero = () => (
   <section id="top" className="relative overflow-hidden pt-28 md:pt-36">
@@ -31,8 +32,10 @@ export const Hero = () => (
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
-            <Button variant="hero" size="xl">
-              Get Started <ArrowRight className="h-4 w-4" />
+            <Button variant="hero" size="xl" asChild>
+              <Link to="/app">
+                Get Started <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
             <Button variant="outline" size="xl">
               <Play className="h-4 w-4" /> See How It Works
