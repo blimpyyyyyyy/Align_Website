@@ -1,5 +1,6 @@
 import { Button } from "./ui/button";
 import { Building2, Plug, TrendingUp, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const items = [
   { icon: TrendingUp, title: "Better student outcomes", body: "Organized students miss less, complete more, and feel less overwhelmed." },
@@ -22,8 +23,10 @@ export const Schools = () => (
           <p className="mt-5 max-w-md text-lg text-white/90">
             Align integrates with your existing systems to reduce missed work and improve student organization — district-wide.
           </p>
-          <Button variant="soft" size="lg" className="mt-7 bg-white text-primary hover:bg-white/90">
-            Partner with Us <ArrowRight className="h-4 w-4" />
+          <Button variant="soft" size="lg" className="mt-7 bg-white text-primary hover:bg-white/90" asChild>
+            <Link to="/partner">
+              Partner with Us <ArrowRight className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
 
