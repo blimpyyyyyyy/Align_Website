@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { CalendarMock } from "./CalendarMock";
 import { Link } from "react-router-dom";
 
@@ -36,9 +36,6 @@ export const Hero = () => (
               <Link to="/app">
                 Get Started <ArrowRight className="h-4 w-4" />
               </Link>
-            </Button>
-            <Button variant="outline" size="xl">
-              <Play className="h-4 w-4" /> See How It Works
             </Button>
           </div>
 
