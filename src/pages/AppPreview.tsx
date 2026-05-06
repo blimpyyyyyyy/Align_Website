@@ -164,7 +164,7 @@ const AppPreview = () => {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Sidebar (desktop) */}
         <aside className="hidden md:flex w-60 shrink-0 flex-col gap-1 border-r border-border bg-card/40 p-4 min-h-[calc(100vh-4rem)] sticky top-16">
           {tabs.map(({ key, label, Icon }) => {
