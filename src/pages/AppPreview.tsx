@@ -5,7 +5,6 @@ import {
   CheckSquare,
   GraduationCap,
   Trophy,
-  Menu,
   Sparkles,
   ArrowLeft,
   Plus,
@@ -18,6 +17,7 @@ import {
   Moon,
   ChevronRight,
   X,
+  Search,
 } from "lucide-react";
 import { Logo } from "@/components/CalendarMock";
 import { SourceInsights } from "@/components/SourceInsights";
@@ -77,7 +77,7 @@ const tabs = [
   { key: "tasks", label: "Tasks", Icon: CheckSquare },
   { key: "academics", label: "Academics", Icon: GraduationCap },
   { key: "sports", label: "Sports", Icon: Trophy },
-  { key: "more", label: "More", Icon: Menu },
+  { key: "more", label: "Account", Icon: User },
 ];
 
 const AppPreview = () => {
@@ -116,7 +116,7 @@ const AppPreview = () => {
       case "sports":
         return { title: "Sports", sub: "Teams and activities you're part of" };
       case "more":
-        return { title: "More", sub: "Account, preferences and support" };
+        return { title: "Account", sub: "Profile, preferences and support" };
       default:
         return { title: "Your AI Synced Week", sub: "Events, classes, sports & tests pulled from all your apps" };
     }
@@ -125,118 +125,162 @@ const AppPreview = () => {
   const header = renderHeader();
 
   return (
-    <div className="min-h-screen bg-gradient-soft py-6 md:py-12">
-      <div className="container max-w-md">
-        <Link
-          to="/"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to site
-        </Link>
+    <div className="min-h-screen bg-gradient-soft animate-fade-in">
+      {/* App top bar */}
+      <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-xl">
+        <div className="flex h-16 items-center gap-4 px-4 md:px-8">
+          <Link
+            to="/"
+            className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back
+          </Link>
+          <div className="hidden md:block h-6 w-px bg-border" />
+          <div className="flex items-center gap-2">
+            <Logo className="h-8 w-8" />
+            <span className="font-display text-xl font-extrabold tracking-tight">Align</span>
+          </div>
 
-        {/* Phone frame */}
-        <div className="relative mx-auto overflow-hidden rounded-[2.5rem] bg-card shadow-dramatic ring-1 ring-border">
-          {/* Top bar */}
-          <div className="flex items-center justify-between px-5 pt-6 pb-3">
-            <div className="flex items-center gap-2">
-              <Logo className="h-8 w-8" />
-              <span className="font-display text-xl font-extrabold tracking-tight">Align</span>
+          <div className="ml-auto flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-sm text-muted-foreground w-72">
+              <Search className="h-4 w-4" />
+              <span className="text-xs">Search events, classes, tasks…</span>
             </div>
-            <div className="flex items-center gap-2 text-right">
-              <div className="text-[11px] leading-tight text-muted-foreground">
-                Welcome, <span className="font-semibold text-foreground">Alex Rivera</span>
-                <div>Lincoln High</div>
+            <button className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors">
+              <Bell className="h-4 w-4" />
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
+            </button>
+            <div className="flex items-center gap-2.5">
+              <div className="hidden sm:block text-right text-[11px] leading-tight">
+                <div className="font-semibold text-foreground">Alex Rivera</div>
+                <div className="text-muted-foreground">Lincoln High</div>
               </div>
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-hero text-xs font-bold text-white">
                 AR
               </div>
             </div>
           </div>
+        </div>
+      </header>
 
-          {/* AI banner (only on calendar/tasks) */}
-          {(activeTab === "calendar" || activeTab === "tasks") && (
-            <div className="mx-5 flex items-center gap-2 rounded-2xl border border-border bg-muted/60 px-3 py-2 text-xs font-medium text-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span>AI merged 7 apps automatically · No manual entry needed</span>
+      <div className="flex">
+        {/* Sidebar (desktop) */}
+        <aside className="hidden md:flex w-60 shrink-0 flex-col gap-1 border-r border-border bg-card/40 p-4 min-h-[calc(100vh-4rem)] sticky top-16">
+          {tabs.map(({ key, label, Icon }) => {
+            const active = key === activeTab;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                  active
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            );
+          })}
+          <div className="mt-auto rounded-xl border border-border bg-background p-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-primary" /> AI Sync Active
             </div>
-          )}
+            <div className="mt-1 text-[11px] text-muted-foreground">
+              7 sources connected · last synced 2m ago
+            </div>
+          </div>
+        </aside>
 
-          {/* Header */}
-          <div className="px-5 pt-5">
-            <h1 className="font-display text-3xl font-extrabold leading-tight">{header.title}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{header.sub}</p>
+        {/* Main content */}
+        <main className="flex-1 min-w-0 px-4 py-6 md:px-8 md:py-8 animate-fade-in">
+          {/* Page header */}
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="font-display text-3xl md:text-4xl font-extrabold leading-tight">{header.title}</h1>
+              <p className="mt-1 text-sm text-muted-foreground">{header.sub}</p>
+            </div>
+            {(activeTab === "calendar" || activeTab === "tasks") && (
+              <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                AI merged 7 apps automatically
+              </div>
+            )}
           </div>
 
           {/* CALENDAR TAB */}
           {activeTab === "calendar" && (
-            <>
-              <div className="mt-5 border-y border-border">
-                <div className="flex overflow-x-auto px-3">
+            <div className="space-y-6">
+              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
+                <div className="flex overflow-x-auto border-b border-border">
                   {days.map((d) => {
                     const active = d === activeDay;
                     return (
                       <button
                         key={d}
                         onClick={() => setActiveDay(d)}
-                        className={`relative flex-1 whitespace-nowrap px-3 py-3 text-sm font-semibold transition-colors ${
+                        className={`relative flex-1 min-w-[110px] whitespace-nowrap px-4 py-3 text-sm font-semibold transition-colors ${
                           active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
                         {d}
                         {active && (
-                          <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" />
+                          <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-primary" />
                         )}
                       </button>
                     );
                   })}
                 </div>
+
+                <div className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3 min-h-[280px]">
+                  {events
+                    .filter((e) => e.day === activeDay)
+                    .map((e, i) => (
+                      <div key={i} className={`rounded-2xl ${e.color} p-4 text-white shadow-soft`}>
+                        <div className="text-xs font-semibold opacity-90">{e.time}</div>
+                        <div className="text-base font-bold leading-tight">{e.title}</div>
+                        <div className={`mt-2 inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold ${e.tagColor}`}>
+                          {e.tag}
+                        </div>
+                      </div>
+                    ))}
+                  {events.filter((e) => e.day === activeDay).length === 0 && (
+                    <div className="md:col-span-2 xl:col-span-3 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+                      Nothing scheduled — enjoy the breather! ✨
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="space-y-3 px-5 py-5 min-h-[360px]">
-                {events
-                  .filter((e) => e.day === activeDay)
-                  .map((e, i) => (
-                    <div key={i} className={`rounded-2xl ${e.color} p-3.5 text-white shadow-soft`}>
-                      <div className="text-xs font-semibold opacity-90">{e.time}</div>
-                      <div className="text-base font-bold leading-tight">{e.title}</div>
-                      <div className={`mt-2 inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold ${e.tagColor}`}>
-                        {e.tag}
-                      </div>
-                    </div>
-                  ))}
-                {events.filter((e) => e.day === activeDay).length === 0 && (
-                  <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                    Nothing scheduled — enjoy the breather! ✨
-                  </div>
-                )}
-              </div>
-            </>
+              <SourceInsights />
+            </div>
           )}
 
           {/* TASKS TAB */}
           {activeTab === "tasks" && (
-            <div className="px-5 py-5 min-h-[360px]">
+            <div className="relative max-w-3xl">
               <button
                 onClick={() => setShowAdd(true)}
-                className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-3 py-3 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:scale-[1.01]"
+                className="mb-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-soft transition-transform hover:scale-[1.01]"
               >
                 <Plus className="h-4 w-4" /> Add Task
               </button>
 
-              <div className="space-y-2">
+              <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
                 {days.map((d) => {
                   const dayEvents = events.filter((e) => e.day === d);
                   if (dayEvents.length === 0) return null;
                   return (
-                    <div key={d}>
-                      <div className="mb-1.5 mt-3 px-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <div key={d} className="mb-4 last:mb-0">
+                      <div className="mb-2 px-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                         {d}
                       </div>
                       <div className="space-y-1.5">
                         {dayEvents.map((e, i) => (
                           <div
                             key={i}
-                            className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5"
+                            className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5 hover:border-primary/40 transition-colors"
                           >
                             <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${e.color}`} />
                             <div className="min-w-0 flex-1">
@@ -254,11 +298,11 @@ const AppPreview = () => {
 
               {showAdd && (
                 <div
-                  className="absolute inset-0 z-10 flex items-end justify-center bg-foreground/40 backdrop-blur-sm"
+                  className="fixed inset-0 z-40 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4 animate-fade-in"
                   onClick={() => setShowAdd(false)}
                 >
                   <div
-                    className="w-full rounded-t-3xl bg-card p-5 shadow-dramatic"
+                    className="w-full max-w-md rounded-2xl bg-card p-6 shadow-dramatic"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="mb-4 flex items-center justify-between">
@@ -307,11 +351,11 @@ const AppPreview = () => {
 
           {/* ACADEMICS TAB */}
           {activeTab === "academics" && (
-            <div className="px-5 py-5 min-h-[360px] space-y-2">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {classes.map((c, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft hover:border-primary/40 transition-colors"
                 >
                   <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.color} text-white`}>
                     <GraduationCap className="h-5 w-5" />
@@ -328,9 +372,9 @@ const AppPreview = () => {
 
           {/* SPORTS TAB */}
           {activeTab === "sports" && (
-            <div className="px-5 py-5 min-h-[360px] space-y-3">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {sports.map((s, i) => (
-                <div key={i} className={`rounded-2xl ${s.color} p-4 text-white shadow-soft`}>
+                <div key={i} className={`rounded-2xl ${s.color} p-5 text-white shadow-soft`}>
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="text-base font-bold">{s.name}</div>
@@ -338,7 +382,7 @@ const AppPreview = () => {
                     </div>
                     <Trophy className="h-5 w-5 opacity-80" />
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-[11px]">
+                  <div className="mt-4 flex items-center justify-between text-[11px]">
                     <span className="rounded-md bg-white/25 px-2 py-0.5 font-semibold">{s.season}</span>
                     <span className="font-semibold opacity-90">{s.next}</span>
                   </div>
@@ -347,10 +391,10 @@ const AppPreview = () => {
             </div>
           )}
 
-          {/* MORE TAB */}
+          {/* MORE / ACCOUNT TAB */}
           {activeTab === "more" && (
-            <div className="px-5 py-5 min-h-[360px]">
-              <div className="mb-4 flex items-center gap-3 rounded-2xl border border-border bg-background p-4">
+            <div className="max-w-2xl space-y-4">
+              <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 shadow-soft">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-hero text-sm font-bold text-white">
                   AR
                 </div>
@@ -359,7 +403,7 @@ const AppPreview = () => {
                   <div className="text-[11px] text-muted-foreground">alex.rivera@lincolnhigh.edu</div>
                 </div>
               </div>
-              <div className="overflow-hidden rounded-2xl border border-border bg-background">
+              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
                 {moreOptions.map(({ label, Icon }, i) => (
                   <button
                     key={label}
@@ -375,33 +419,27 @@ const AppPreview = () => {
               </div>
             </div>
           )}
-
-          {/* Bottom nav */}
-          <div className="grid grid-cols-5 border-t border-border bg-card/95 backdrop-blur">
-            {tabs.map(({ key, label, Icon }) => {
-              const active = key === activeTab;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key)}
-                  className={`flex flex-col items-center gap-1 py-3 text-[11px] font-semibold transition-colors ${
-                    active ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <SourceInsights />
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          This is a sample preview of the Align app.
-        </p>
+        </main>
       </div>
+
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden sticky bottom-0 z-30 grid grid-cols-5 border-t border-border bg-card/95 backdrop-blur">
+        {tabs.map(({ key, label, Icon }) => {
+          const active = key === activeTab;
+          return (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`flex flex-col items-center gap-1 py-3 text-[11px] font-semibold transition-colors ${
+                active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              {label}
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 };
