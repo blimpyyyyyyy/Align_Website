@@ -741,4 +741,14 @@ const AppPreview = () => {
   );
 };
 
+const SettingRow = ({ label, description, children }: { label: string; description?: string; children: React.ReactNode }) => (
+  <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3">
+    <div>
+      <div className="text-sm font-bold text-foreground">{label}</div>
+      {description && <div className="text-[11px] text-muted-foreground">{description}</div>}
+    </div>
+    {children}
+  </div>
+);
+
 export default AppPreview;
