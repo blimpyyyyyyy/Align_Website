@@ -395,6 +395,8 @@ const AppPreview = () => {
           </div>
         </div>
 
+        <SourceInsights />
+
         <p className="mt-6 text-center text-xs text-muted-foreground">
           This is a sample preview of the Align app.
         </p>
