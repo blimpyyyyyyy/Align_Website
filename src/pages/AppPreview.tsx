@@ -125,15 +125,16 @@ const AppPreview = () => {
   const header = renderHeader();
 
   return (
-    <div className="min-h-screen bg-gradient-soft animate-fade-in">
+    <div className="flex min-h-screen flex-col bg-gradient-soft animate-fade-in">
       {/* App top bar */}
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-xl">
-        <div className="flex h-16 items-center gap-4 px-4 md:px-8">
+        <div className="flex h-16 items-center gap-3 px-4 md:px-8">
           <Link
             to="/"
-            className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1.5 text-sm font-semibold text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:border-primary hover:-translate-x-0.5"
+            aria-label="Back to home"
           >
-            <ArrowLeft className="h-4 w-4" /> Back
+            <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Home</span>
           </Link>
           <div className="hidden md:block h-6 w-px bg-border" />
           <div className="flex items-center gap-2">
@@ -163,7 +164,7 @@ const AppPreview = () => {
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Sidebar (desktop) */}
         <aside className="hidden md:flex w-60 shrink-0 flex-col gap-1 border-r border-border bg-card/40 p-4 min-h-[calc(100vh-4rem)] sticky top-16">
           {tabs.map(({ key, label, Icon }) => {
