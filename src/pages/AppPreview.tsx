@@ -597,6 +597,146 @@ const AppPreview = () => {
           );
         })}
       </nav>
+
+      {/* Side panels */}
+      <Sheet open={openPanel === "settings"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Settings</SheetTitle>
+            <SheetDescription>Manage how Align works for you.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-6">
+            <SettingRow label="Auto-sync sources" description="Pull updates every 5 minutes">
+              <Switch checked={autoSync} onCheckedChange={(v) => { setAutoSync(v); toast(v ? "Auto-sync on" : "Auto-sync paused"); }} />
+            </SettingRow>
+            <SettingRow label="Smart reminders" description="AI nudges before deadlines">
+              <Switch checked={smartReminders} onCheckedChange={setSmartReminders} />
+            </SettingRow>
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-bold">AI prioritization sensitivity</div>
+                  <div className="text-[11px] text-muted-foreground">Higher = more events auto-added</div>
+                </div>
+                <span className="text-xs font-bold text-primary">{aiSensitivity[0]}%</span>
+              </div>
+              <Slider value={aiSensitivity} onValueChange={setAiSensitivity} max={100} step={5} />
+            </div>
+            <div>
+              <div className="mb-2 text-sm font-bold">Connected apps</div>
+              <div className="space-y-2">
+                {Object.entries(connectedApps).map(([name, on]) => (
+                  <div key={name} className="flex items-center justify-between rounded-xl border border-border bg-card p-3">
+                    <span className="text-sm font-semibold">{name}</span>
+                    <button
+                      onClick={() => toggleApp(name)}
+                      className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                        on ? "bg-primary/10 text-primary hover:bg-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      }`}
+                    >
+                      {on ? "Connected" : "Connect"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "profile"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Profile</SheetTitle>
+            <SheetDescription>Your account info</SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-hero text-base font-bold text-white">AR</div>
+              <div>
+                <div className="text-base font-bold">Alex Rivera</div>
+                <div className="text-xs text-muted-foreground">alex.rivera@lincolnhigh.edu</div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-3 text-xs">
+              <div className="flex justify-between py-1"><span className="text-muted-foreground">School</span><span className="font-semibold">Lincoln High</span></div>
+              <div className="flex justify-between py-1"><span className="text-muted-foreground">Grade</span><span className="font-semibold">11th</span></div>
+              <div className="flex justify-between py-1"><span className="text-muted-foreground">Joined</span><span className="font-semibold">Sep 2024</span></div>
+            </div>
+            <button
+              onClick={() => toast.success("Profile saved")}
+              className="w-full rounded-xl bg-primary px-3 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition"
+            >
+              Save changes
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "notifications"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Notifications</SheetTitle><SheetDescription>What we ping you about</SheetDescription></SheetHeader>
+          <div className="mt-6 space-y-4">
+            <SettingRow label="Push notifications" description="On this device"><Switch checked={pushNotifs} onCheckedChange={setPushNotifs} /></SettingRow>
+            <SettingRow label="Email digest" description="Daily summary at 7am"><Switch checked={emailNotifs} onCheckedChange={setEmailNotifs} /></SettingRow>
+            <SettingRow label="Smart reminders" description="AI nudges"><Switch checked={smartReminders} onCheckedChange={setSmartReminders} /></SettingRow>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "appearance"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Appearance</SheetTitle><SheetDescription>Light or dark mode</SheetDescription></SheetHeader>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            {(["light", "dark"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => { setTheme(t); toast(`${t === "dark" ? "Dark" : "Light"} mode enabled`); }}
+                className={`rounded-2xl border p-6 text-sm font-bold capitalize transition-all ${
+                  theme === t ? "border-primary bg-primary/10 text-primary" : "border-border bg-card hover:border-primary/40"
+                }`}
+              >
+                {t} mode
+              </button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "privacy"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Privacy</SheetTitle><SheetDescription>Control your data</SheetDescription></SheetHeader>
+          <div className="mt-6 space-y-3 text-sm">
+            <button onClick={() => toast.success("Data export requested")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Export my data</button>
+            <button onClick={() => toast("Activity log opened")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">View activity log</button>
+            <button onClick={() => toast.error("Action requires confirmation")} className="w-full rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-left font-semibold text-destructive hover:bg-destructive/10 transition">Delete account</button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "help"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Help & Support</SheetTitle><SheetDescription>We're here to help</SheetDescription></SheetHeader>
+          <div className="mt-6 space-y-3 text-sm">
+            <button onClick={() => toast("Opening chat…")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Chat with support</button>
+            <button onClick={() => toast("Help center opened")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Browse help center</button>
+            <button onClick={() => toast.success("Feedback sent — thanks!")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Send feedback</button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Dialog open={confirmSignOut} onOpenChange={setConfirmSignOut}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Sign out?</DialogTitle>
+            <DialogDescription>You'll need to sign back in to access your calendar.</DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex justify-end gap-2">
+            <button onClick={() => setConfirmSignOut(false)} className="rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold hover:bg-muted/60 transition">Cancel</button>
+            <button onClick={() => { setConfirmSignOut(false); toast.success("Signed out"); }} className="rounded-xl bg-destructive px-4 py-2 text-sm font-bold text-destructive-foreground hover:opacity-90 transition">Sign out</button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
