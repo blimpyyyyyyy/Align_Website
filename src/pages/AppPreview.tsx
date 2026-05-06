@@ -349,11 +349,42 @@ const AppPreview = () => {
                   })}
                 </div>
 
+                <div className="flex flex-wrap items-center gap-2 border-b border-border px-5 py-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Filter:</span>
+                  {(["all", "academics", "sports", "events"] as const).map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setFilter(f)}
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold capitalize transition-all active:scale-95 ${
+                        filter === f
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3 min-h-[280px]">
                   {events
                     .filter((e) => e.day === activeDay)
+                    .filter((e) => {
+                      if (filter === "academics") return /class|test|essay|quiz|presentation|study|homeroom|biology|calc|english|history/i.test(e.title + e.tag);
+                      if (filter === "sports") return /soccer|practice|game|track|basketball|athletic/i.test(e.title + e.tag);
+                      if (filter === "events") return /club|rehearsal|band|debate|meeting/i.test(e.title + e.tag);
+                      return true;
+                    })
+                    .filter((e) => !searchQuery || e.title.toLowerCase().includes(searchQuery.toLowerCase()))
                     .map((e, i) => (
-                      <div key={i} className={`rounded-2xl ${e.color} p-4 text-white shadow-soft`}>
+                      <div key={i} className={`group relative rounded-2xl ${e.color} p-4 text-white shadow-soft transition-transform hover:-translate-y-0.5`}>
+                        <button
+                          onClick={() => removeEvent(e)}
+                          className="absolute right-2 top-2 hidden h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white opacity-0 transition-opacity group-hover:flex group-hover:opacity-100 hover:bg-white/30"
+                          aria-label="Remove event"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
                         <div className="text-xs font-semibold opacity-90">{e.time}</div>
                         <div className="text-base font-bold leading-tight">{e.title}</div>
                         <div className={`mt-2 inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold ${e.tagColor}`}>
