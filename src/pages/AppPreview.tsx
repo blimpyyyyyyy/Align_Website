@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { Logo } from "@/components/CalendarMock";
+import { SourceInsights } from "@/components/SourceInsights";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -394,6 +395,8 @@ const AppPreview = () => {
             })}
           </div>
         </div>
+
+        <SourceInsights />
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
           This is a sample preview of the Align app.
