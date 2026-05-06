@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { Logo } from "@/components/CalendarMock";
+import { SourceInsights } from "@/components/SourceInsights";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
