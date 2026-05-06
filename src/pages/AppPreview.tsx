@@ -95,9 +95,44 @@ const AppPreview = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newDay, setNewDay] = useState("Monday");
   const [newTime, setNewTime] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openPanel, setOpenPanel] = useState<null | "settings" | "profile" | "notifications" | "privacy" | "appearance" | "help">(null);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [filter, setFilter] = useState<"all" | "academics" | "sports" | "events">("all");
+
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "dark" : "light"
+  );
+  const [pushNotifs, setPushNotifs] = useState(true);
+  const [emailNotifs, setEmailNotifs] = useState(false);
+  const [smartReminders, setSmartReminders] = useState(true);
+  const [aiSensitivity, setAiSensitivity] = useState([70]);
+  const [autoSync, setAutoSync] = useState(true);
+  const [connectedApps, setConnectedApps] = useState<Record<string, boolean>>({
+    Canvas: true,
+    RenWeb: true,
+    Remind: true,
+    Gmail: true,
+    "Google Classroom": true,
+    "Outlook Calendar": false,
+  });
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "Biology Test moved to Wed", time: "2m ago", read: false },
+    { id: 2, title: "New assignment in AP English", time: "1h ago", read: false },
+    { id: 3, title: "Soccer practice canceled", time: "3h ago", read: true },
+  ]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const addEvent = () => {
-    if (!newTitle.trim() || !newTime.trim()) return;
+    if (!newTitle.trim() || !newTime.trim()) {
+      toast.error("Add a title and time first");
+      return;
+    }
     setEvents((prev) => [
       ...prev,
       {
@@ -112,6 +147,37 @@ const AppPreview = () => {
     setNewTitle("");
     setNewTime("");
     setShowAdd(false);
+    toast.success("Task added to calendar");
+  };
+
+  const removeEvent = (target: Event) => {
+    setEvents((prev) => prev.filter((e) => e !== target));
+    toast("Event removed");
+  };
+
+  const toggleApp = (name: string) => {
+    setConnectedApps((prev) => {
+      const next = { ...prev, [name]: !prev[name] };
+      toast(next[name] ? `Connected ${name}` : `Disconnected ${name}`);
+      return next;
+    });
+  };
+
+  const markAllRead = () => {
+    setNotifications((p) => p.map((n) => ({ ...n, read: true })));
+    toast.success("All notifications marked as read");
+  };
+
+  const handleMoreAction = (label: string) => {
+    switch (label) {
+      case "Profile": setOpenPanel("profile"); break;
+      case "Settings": setOpenPanel("settings"); break;
+      case "Notifications": setOpenPanel("notifications"); break;
+      case "Privacy": setOpenPanel("privacy"); break;
+      case "Appearance": setOpenPanel("appearance"); break;
+      case "Help & Support": setOpenPanel("help"); break;
+      case "Sign Out": setConfirmSignOut(true); break;
+    }
   };
 
   const renderHeader = () => {
