@@ -500,9 +500,10 @@ const AppPreview = () => {
           {activeTab === "academics" && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {classes.map((c, i) => (
-                <div
+                <button
                   key={i}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft hover:border-primary/40 transition-colors"
+                  onClick={() => toast(`${c.name}`, { description: `${c.teacher} · ${c.room}` })}
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-soft hover:border-primary/40 hover:-translate-y-0.5 transition-all active:scale-[0.99]"
                 >
                   <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.color} text-white`}>
                     <GraduationCap className="h-5 w-5" />
@@ -512,7 +513,7 @@ const AppPreview = () => {
                     <div className="text-[11px] text-muted-foreground">{c.teacher} · {c.room}</div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -521,7 +522,11 @@ const AppPreview = () => {
           {activeTab === "sports" && (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {sports.map((s, i) => (
-                <div key={i} className={`rounded-2xl ${s.color} p-5 text-white shadow-soft`}>
+                <button
+                  key={i}
+                  onClick={() => toast(s.name, { description: s.next })}
+                  className={`text-left rounded-2xl ${s.color} p-5 text-white shadow-soft hover:-translate-y-0.5 transition-transform active:scale-[0.99]`}
+                >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="text-base font-bold">{s.name}</div>
@@ -533,7 +538,7 @@ const AppPreview = () => {
                     <span className="rounded-md bg-white/25 px-2 py-0.5 font-semibold">{s.season}</span>
                     <span className="font-semibold opacity-90">{s.next}</span>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -541,20 +546,25 @@ const AppPreview = () => {
           {/* MORE / ACCOUNT TAB */}
           {activeTab === "more" && (
             <div className="max-w-2xl space-y-4">
-              <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 shadow-soft">
+              <button
+                onClick={() => setOpenPanel("profile")}
+                className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-5 text-left shadow-soft hover:border-primary/40 transition-colors"
+              >
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-hero text-sm font-bold text-white">
                   AR
                 </div>
-                <div>
+                <div className="flex-1">
                   <div className="text-sm font-bold text-foreground">Alex Rivera</div>
                   <div className="text-[11px] text-muted-foreground">alex.rivera@lincolnhigh.edu</div>
                 </div>
-              </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
               <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
                 {moreOptions.map(({ label, Icon }, i) => (
                   <button
                     key={label}
-                    className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 ${
+                    onClick={() => handleMoreAction(label)}
+                    className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 active:bg-muted ${
                       i !== moreOptions.length - 1 ? "border-b border-border" : ""
                     }`}
                   >
