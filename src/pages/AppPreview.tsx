@@ -216,15 +216,57 @@ const AppPreview = () => {
           </div>
 
           <div className="ml-auto flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-sm text-muted-foreground w-72">
-              <Search className="h-4 w-4" />
-              <span className="text-xs">Search events, classes, tasks…</span>
+            <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-sm focus-within:border-primary transition-colors w-72">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search events, classes, tasks…"
+                className="w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+              />
             </div>
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors">
-              <Bell className="h-4 w-4" />
-              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-            </button>
-            <div className="flex items-center gap-2.5">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all active:scale-95"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-4 w-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary ring-2 ring-card" />
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80 p-0">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <div className="text-sm font-bold">Notifications</div>
+                  <button onClick={markAllRead} className="text-[11px] font-semibold text-primary hover:underline">
+                    Mark all read
+                  </button>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.map((n) => (
+                    <button
+                      key={n.id}
+                      onClick={() =>
+                        setNotifications((p) => p.map((x) => (x.id === n.id ? { ...x, read: true } : x)))
+                      }
+                      className="flex w-full items-start gap-3 border-b border-border px-4 py-3 text-left hover:bg-muted/40 transition-colors"
+                    >
+                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.read ? "bg-muted-foreground/30" : "bg-primary"}`} />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold text-foreground">{n.title}</div>
+                        <div className="text-[10px] text-muted-foreground">{n.time}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <button
+              onClick={() => setOpenPanel("profile")}
+              className="flex items-center gap-2.5 rounded-full p-1 pl-2.5 hover:bg-muted/60 transition-colors"
+            >
               <div className="hidden sm:block text-right text-[11px] leading-tight">
                 <div className="font-semibold text-foreground">Alex Rivera</div>
                 <div className="text-muted-foreground">Lincoln High</div>
@@ -232,7 +274,7 @@ const AppPreview = () => {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-hero text-xs font-bold text-white">
                 AR
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
