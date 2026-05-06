@@ -11,7 +11,7 @@ const features = [
   {
     icon: RefreshCw,
     title: "Automatic Sync",
-    body: "Canvas, ReNew, Google Classroom and more — always in sync.",
+    body: "Canvas, RenWeb, Google Classroom and more — always in sync.",
   },
   {
     icon: ListChecks,

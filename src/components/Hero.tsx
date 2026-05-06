@@ -42,7 +42,7 @@ export const Hero = () => (
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground lg:justify-start">
             <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-green" /> Canvas</span>
             <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-primary" /> Google Classroom</span>
-            <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-purple" /> ReNew</span>
+            <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-purple" /> RenWeb</span>
             <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-amber-400" /> + more</span>
           </div>
         </div>

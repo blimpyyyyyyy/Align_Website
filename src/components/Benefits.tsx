@@ -10,7 +10,7 @@ const benefits = [
   {
     icon: RefreshCw,
     title: "All platforms, auto-synced",
-    body: "Canvas, ReNew, Google Classroom — connected in seconds.",
+    body: "Canvas, RenWeb, Google Classroom — connected in seconds.",
     accent: "bg-secondary text-secondary-foreground",
   },
   {
