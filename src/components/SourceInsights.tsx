@@ -25,7 +25,7 @@ const sources: Source[] = [
     ],
   },
   {
-    name: "Renew",
+    name: "RenWeb",
     Icon: RefreshCw,
     color: "bg-[hsl(150_55%_55%)]",
     added: [{ title: "Basketball Practice", tag: "High Priority" }],

@@ -4,7 +4,7 @@ const steps = [
   {
     icon: Link2,
     title: "Connect your school apps",
-    body: "Sign in with Canvas, Google Classroom, ReNew, or any system your school uses.",
+    body: "Sign in with Canvas, Google Classroom, RenWeb, or any system your school uses.",
   },
   {
     icon: Download,

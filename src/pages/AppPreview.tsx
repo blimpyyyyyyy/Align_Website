@@ -1,4 +1,11 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   Calendar,
@@ -88,9 +95,44 @@ const AppPreview = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newDay, setNewDay] = useState("Monday");
   const [newTime, setNewTime] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openPanel, setOpenPanel] = useState<null | "settings" | "profile" | "notifications" | "privacy" | "appearance" | "help">(null);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [filter, setFilter] = useState<"all" | "academics" | "sports" | "events">("all");
+
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "dark" : "light"
+  );
+  const [pushNotifs, setPushNotifs] = useState(true);
+  const [emailNotifs, setEmailNotifs] = useState(false);
+  const [smartReminders, setSmartReminders] = useState(true);
+  const [aiSensitivity, setAiSensitivity] = useState([70]);
+  const [autoSync, setAutoSync] = useState(true);
+  const [connectedApps, setConnectedApps] = useState<Record<string, boolean>>({
+    Canvas: true,
+    RenWeb: true,
+    Remind: true,
+    Gmail: true,
+    "Google Classroom": true,
+    "Outlook Calendar": false,
+  });
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "Biology Test moved to Wed", time: "2m ago", read: false },
+    { id: 2, title: "New assignment in AP English", time: "1h ago", read: false },
+    { id: 3, title: "Soccer practice canceled", time: "3h ago", read: true },
+  ]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const addEvent = () => {
-    if (!newTitle.trim() || !newTime.trim()) return;
+    if (!newTitle.trim() || !newTime.trim()) {
+      toast.error("Add a title and time first");
+      return;
+    }
     setEvents((prev) => [
       ...prev,
       {
@@ -105,6 +147,37 @@ const AppPreview = () => {
     setNewTitle("");
     setNewTime("");
     setShowAdd(false);
+    toast.success("Task added to calendar");
+  };
+
+  const removeEvent = (target: Event) => {
+    setEvents((prev) => prev.filter((e) => e !== target));
+    toast("Event removed");
+  };
+
+  const toggleApp = (name: string) => {
+    setConnectedApps((prev) => {
+      const next = { ...prev, [name]: !prev[name] };
+      toast(next[name] ? `Connected ${name}` : `Disconnected ${name}`);
+      return next;
+    });
+  };
+
+  const markAllRead = () => {
+    setNotifications((p) => p.map((n) => ({ ...n, read: true })));
+    toast.success("All notifications marked as read");
+  };
+
+  const handleMoreAction = (label: string) => {
+    switch (label) {
+      case "Profile": setOpenPanel("profile"); break;
+      case "Settings": setOpenPanel("settings"); break;
+      case "Notifications": setOpenPanel("notifications"); break;
+      case "Privacy": setOpenPanel("privacy"); break;
+      case "Appearance": setOpenPanel("appearance"); break;
+      case "Help & Support": setOpenPanel("help"); break;
+      case "Sign Out": setConfirmSignOut(true); break;
+    }
   };
 
   const renderHeader = () => {
@@ -143,15 +216,57 @@ const AppPreview = () => {
           </div>
 
           <div className="ml-auto flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-sm text-muted-foreground w-72">
-              <Search className="h-4 w-4" />
-              <span className="text-xs">Search events, classes, tasks…</span>
+            <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1.5 text-sm focus-within:border-primary transition-colors w-72">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search events, classes, tasks…"
+                className="w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+              />
             </div>
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors">
-              <Bell className="h-4 w-4" />
-              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-            </button>
-            <div className="flex items-center gap-2.5">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all active:scale-95"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-4 w-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary ring-2 ring-card" />
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80 p-0">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <div className="text-sm font-bold">Notifications</div>
+                  <button onClick={markAllRead} className="text-[11px] font-semibold text-primary hover:underline">
+                    Mark all read
+                  </button>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.map((n) => (
+                    <button
+                      key={n.id}
+                      onClick={() =>
+                        setNotifications((p) => p.map((x) => (x.id === n.id ? { ...x, read: true } : x)))
+                      }
+                      className="flex w-full items-start gap-3 border-b border-border px-4 py-3 text-left hover:bg-muted/40 transition-colors"
+                    >
+                      <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.read ? "bg-muted-foreground/30" : "bg-primary"}`} />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold text-foreground">{n.title}</div>
+                        <div className="text-[10px] text-muted-foreground">{n.time}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <button
+              onClick={() => setOpenPanel("profile")}
+              className="flex items-center gap-2.5 rounded-full p-1 pl-2.5 hover:bg-muted/60 transition-colors"
+            >
               <div className="hidden sm:block text-right text-[11px] leading-tight">
                 <div className="font-semibold text-foreground">Alex Rivera</div>
                 <div className="text-muted-foreground">Lincoln High</div>
@@ -159,7 +274,7 @@ const AppPreview = () => {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-hero text-xs font-bold text-white">
                 AR
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
@@ -234,11 +349,42 @@ const AppPreview = () => {
                   })}
                 </div>
 
+                <div className="flex flex-wrap items-center gap-2 border-b border-border px-5 py-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Filter:</span>
+                  {(["all", "academics", "sports", "events"] as const).map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setFilter(f)}
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold capitalize transition-all active:scale-95 ${
+                        filter === f
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3 min-h-[280px]">
                   {events
                     .filter((e) => e.day === activeDay)
+                    .filter((e) => {
+                      if (filter === "academics") return /class|test|essay|quiz|presentation|study|homeroom|biology|calc|english|history/i.test(e.title + e.tag);
+                      if (filter === "sports") return /soccer|practice|game|track|basketball|athletic/i.test(e.title + e.tag);
+                      if (filter === "events") return /club|rehearsal|band|debate|meeting/i.test(e.title + e.tag);
+                      return true;
+                    })
+                    .filter((e) => !searchQuery || e.title.toLowerCase().includes(searchQuery.toLowerCase()))
                     .map((e, i) => (
-                      <div key={i} className={`rounded-2xl ${e.color} p-4 text-white shadow-soft`}>
+                      <div key={i} className={`group relative rounded-2xl ${e.color} p-4 text-white shadow-soft transition-transform hover:-translate-y-0.5`}>
+                        <button
+                          onClick={() => removeEvent(e)}
+                          className="absolute right-2 top-2 hidden h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white opacity-0 transition-opacity group-hover:flex group-hover:opacity-100 hover:bg-white/30"
+                          aria-label="Remove event"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
                         <div className="text-xs font-semibold opacity-90">{e.time}</div>
                         <div className="text-base font-bold leading-tight">{e.title}</div>
                         <div className={`mt-2 inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold ${e.tagColor}`}>
@@ -354,9 +500,10 @@ const AppPreview = () => {
           {activeTab === "academics" && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {classes.map((c, i) => (
-                <div
+                <button
                   key={i}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft hover:border-primary/40 transition-colors"
+                  onClick={() => toast(`${c.name}`, { description: `${c.teacher} · ${c.room}` })}
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-soft hover:border-primary/40 hover:-translate-y-0.5 transition-all active:scale-[0.99]"
                 >
                   <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.color} text-white`}>
                     <GraduationCap className="h-5 w-5" />
@@ -366,7 +513,7 @@ const AppPreview = () => {
                     <div className="text-[11px] text-muted-foreground">{c.teacher} · {c.room}</div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -375,7 +522,11 @@ const AppPreview = () => {
           {activeTab === "sports" && (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {sports.map((s, i) => (
-                <div key={i} className={`rounded-2xl ${s.color} p-5 text-white shadow-soft`}>
+                <button
+                  key={i}
+                  onClick={() => toast(s.name, { description: s.next })}
+                  className={`text-left rounded-2xl ${s.color} p-5 text-white shadow-soft hover:-translate-y-0.5 transition-transform active:scale-[0.99]`}
+                >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="text-base font-bold">{s.name}</div>
@@ -387,7 +538,7 @@ const AppPreview = () => {
                     <span className="rounded-md bg-white/25 px-2 py-0.5 font-semibold">{s.season}</span>
                     <span className="font-semibold opacity-90">{s.next}</span>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -395,20 +546,25 @@ const AppPreview = () => {
           {/* MORE / ACCOUNT TAB */}
           {activeTab === "more" && (
             <div className="max-w-2xl space-y-4">
-              <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 shadow-soft">
+              <button
+                onClick={() => setOpenPanel("profile")}
+                className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-5 text-left shadow-soft hover:border-primary/40 transition-colors"
+              >
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-hero text-sm font-bold text-white">
                   AR
                 </div>
-                <div>
+                <div className="flex-1">
                   <div className="text-sm font-bold text-foreground">Alex Rivera</div>
                   <div className="text-[11px] text-muted-foreground">alex.rivera@lincolnhigh.edu</div>
                 </div>
-              </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
               <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
                 {moreOptions.map(({ label, Icon }, i) => (
                   <button
                     key={label}
-                    className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 ${
+                    onClick={() => handleMoreAction(label)}
+                    className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted/60 active:bg-muted ${
                       i !== moreOptions.length - 1 ? "border-b border-border" : ""
                     }`}
                   >
@@ -441,8 +597,158 @@ const AppPreview = () => {
           );
         })}
       </nav>
+
+      {/* Side panels */}
+      <Sheet open={openPanel === "settings"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Settings</SheetTitle>
+            <SheetDescription>Manage how Align works for you.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-6">
+            <SettingRow label="Auto-sync sources" description="Pull updates every 5 minutes">
+              <Switch checked={autoSync} onCheckedChange={(v) => { setAutoSync(v); toast(v ? "Auto-sync on" : "Auto-sync paused"); }} />
+            </SettingRow>
+            <SettingRow label="Smart reminders" description="AI nudges before deadlines">
+              <Switch checked={smartReminders} onCheckedChange={setSmartReminders} />
+            </SettingRow>
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-bold">AI prioritization sensitivity</div>
+                  <div className="text-[11px] text-muted-foreground">Higher = more events auto-added</div>
+                </div>
+                <span className="text-xs font-bold text-primary">{aiSensitivity[0]}%</span>
+              </div>
+              <Slider value={aiSensitivity} onValueChange={setAiSensitivity} max={100} step={5} />
+            </div>
+            <div>
+              <div className="mb-2 text-sm font-bold">Connected apps</div>
+              <div className="space-y-2">
+                {Object.entries(connectedApps).map(([name, on]) => (
+                  <div key={name} className="flex items-center justify-between rounded-xl border border-border bg-card p-3">
+                    <span className="text-sm font-semibold">{name}</span>
+                    <button
+                      onClick={() => toggleApp(name)}
+                      className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                        on ? "bg-primary/10 text-primary hover:bg-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      }`}
+                    >
+                      {on ? "Connected" : "Connect"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "profile"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Profile</SheetTitle>
+            <SheetDescription>Your account info</SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-hero text-base font-bold text-white">AR</div>
+              <div>
+                <div className="text-base font-bold">Alex Rivera</div>
+                <div className="text-xs text-muted-foreground">alex.rivera@lincolnhigh.edu</div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-3 text-xs">
+              <div className="flex justify-between py-1"><span className="text-muted-foreground">School</span><span className="font-semibold">Lincoln High</span></div>
+              <div className="flex justify-between py-1"><span className="text-muted-foreground">Grade</span><span className="font-semibold">11th</span></div>
+              <div className="flex justify-between py-1"><span className="text-muted-foreground">Joined</span><span className="font-semibold">Sep 2024</span></div>
+            </div>
+            <button
+              onClick={() => toast.success("Profile saved")}
+              className="w-full rounded-xl bg-primary px-3 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition"
+            >
+              Save changes
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "notifications"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Notifications</SheetTitle><SheetDescription>What we ping you about</SheetDescription></SheetHeader>
+          <div className="mt-6 space-y-4">
+            <SettingRow label="Push notifications" description="On this device"><Switch checked={pushNotifs} onCheckedChange={setPushNotifs} /></SettingRow>
+            <SettingRow label="Email digest" description="Daily summary at 7am"><Switch checked={emailNotifs} onCheckedChange={setEmailNotifs} /></SettingRow>
+            <SettingRow label="Smart reminders" description="AI nudges"><Switch checked={smartReminders} onCheckedChange={setSmartReminders} /></SettingRow>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "appearance"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Appearance</SheetTitle><SheetDescription>Light or dark mode</SheetDescription></SheetHeader>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            {(["light", "dark"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => { setTheme(t); toast(`${t === "dark" ? "Dark" : "Light"} mode enabled`); }}
+                className={`rounded-2xl border p-6 text-sm font-bold capitalize transition-all ${
+                  theme === t ? "border-primary bg-primary/10 text-primary" : "border-border bg-card hover:border-primary/40"
+                }`}
+              >
+                {t} mode
+              </button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "privacy"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Privacy</SheetTitle><SheetDescription>Control your data</SheetDescription></SheetHeader>
+          <div className="mt-6 space-y-3 text-sm">
+            <button onClick={() => toast.success("Data export requested")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Export my data</button>
+            <button onClick={() => toast("Activity log opened")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">View activity log</button>
+            <button onClick={() => toast.error("Action requires confirmation")} className="w-full rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-left font-semibold text-destructive hover:bg-destructive/10 transition">Delete account</button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={openPanel === "help"} onOpenChange={(o) => !o && setOpenPanel(null)}>
+        <SheetContent className="w-full sm:max-w-md">
+          <SheetHeader><SheetTitle>Help & Support</SheetTitle><SheetDescription>We're here to help</SheetDescription></SheetHeader>
+          <div className="mt-6 space-y-3 text-sm">
+            <button onClick={() => toast("Opening chat…")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Chat with support</button>
+            <button onClick={() => toast("Help center opened")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Browse help center</button>
+            <button onClick={() => toast.success("Feedback sent — thanks!")} className="w-full rounded-xl border border-border bg-card p-3 text-left font-semibold hover:border-primary/40 transition">Send feedback</button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Dialog open={confirmSignOut} onOpenChange={setConfirmSignOut}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Sign out?</DialogTitle>
+            <DialogDescription>You'll need to sign back in to access your calendar.</DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex justify-end gap-2">
+            <button onClick={() => setConfirmSignOut(false)} className="rounded-xl border border-border bg-background px-4 py-2 text-sm font-semibold hover:bg-muted/60 transition">Cancel</button>
+            <button onClick={() => { setConfirmSignOut(false); toast.success("Signed out"); }} className="rounded-xl bg-destructive px-4 py-2 text-sm font-bold text-destructive-foreground hover:opacity-90 transition">Sign out</button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+const SettingRow = ({ label, description, children }: { label: string; description?: string; children: React.ReactNode }) => (
+  <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3">
+    <div>
+      <div className="text-sm font-bold text-foreground">{label}</div>
+      {description && <div className="text-[11px] text-muted-foreground">{description}</div>}
+    </div>
+    {children}
+  </div>
+);
 
 export default AppPreview;
