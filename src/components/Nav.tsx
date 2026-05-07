@@ -77,8 +77,11 @@ export const Nav = () => {
                 {l.label}
               </a>
             ))}
-            <Button variant="hero" className="mt-2 w-full" asChild>
-              <Link to="/app" onClick={() => setOpen(false)}>Get Started</Link>
+            <Button variant="outline" className="mt-2 w-full" asChild>
+              <Link to="/professionals" onClick={() => setOpen(false)}>For Professionals</Link>
+            </Button>
+            <Button variant="hero" className="w-full" asChild>
+              <Link to="/app" onClick={() => setOpen(false)}>For Students</Link>
             </Button>
           </div>
         </div>
