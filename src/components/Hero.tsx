@@ -34,7 +34,12 @@ export const Hero = () => (
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
             <Button variant="hero" size="xl" asChild>
               <Link to="/app">
-                Get Started <ArrowRight className="h-4 w-4" />
+                Get Started for Students <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="xl" asChild>
+              <Link to="/professionals">
+                Get Started for Professionals <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>

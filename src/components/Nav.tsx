@@ -47,9 +47,11 @@ export const Nav = () => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">Sign in</Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/professionals">For Professionals</Link>
+          </Button>
           <Button variant="hero" size="sm" asChild>
-            <Link to="/app">Get Started</Link>
+            <Link to="/app">For Students</Link>
           </Button>
         </div>
 
@@ -75,8 +77,11 @@ export const Nav = () => {
                 {l.label}
               </a>
             ))}
-            <Button variant="hero" className="mt-2 w-full" asChild>
-              <Link to="/app" onClick={() => setOpen(false)}>Get Started</Link>
+            <Button variant="outline" className="mt-2 w-full" asChild>
+              <Link to="/professionals" onClick={() => setOpen(false)}>For Professionals</Link>
+            </Button>
+            <Button variant="hero" className="w-full" asChild>
+              <Link to="/app" onClick={() => setOpen(false)}>For Students</Link>
             </Button>
           </div>
         </div>
